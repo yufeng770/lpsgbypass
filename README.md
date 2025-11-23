@@ -8,7 +8,7 @@
 
 ## 🚀 使用方法
 
-1. 将下面的代码保存为浏览器书签（Bookmarklet）。  
+1. 将booklet的代码保存为浏览器书签（Bookmarklet）。  
 2. 在任何 **支持书签 JS 注入** 的浏览器中（例如 **Chrome（Windows）**、**Firefox（Android）**）打开受限制的视频页面。  
 3. **点击书签**，即可尝试自动解锁观看。
 
