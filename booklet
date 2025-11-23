@@ -1,1 +1,37 @@
-javascript:(() => {    console.log(">>> 批量解锁视频 Bookmarklet 开始 <<<");    document.querySelectorAll('.video-easter-egg-blocker, .video-easter-egg-overlay').forEach(el => el.remove());    const posterImgs = document.querySelectorAll(".video-easter-egg-poster img");    if (posterImgs.length === 0) { console.log("❌ 未找到封面图片"); return; }    posterImgs.forEach(posterImg => {        const src = posterImg.src;        let videoUrl = null;        let match = src.match(/\/data\/attachments\/posters\/(\d+)\/(\d+)-([a-f0-9]+)\.jpg$/);        if (match) { const [_, postId, videoId, hash] = match; videoUrl = `https://cdn-videos.lpsg.com/data/video/${postId}/${videoId}-${hash}.mp4`; }        match = src.match(/\/data\/+lsvideo\/thumbnails\/(\d+)\/(\d+)\/(.+)\.jpg$/);        if (match) { const [_, yyyy, mm, filename] = match; videoUrl = `https://cdn-videos.lpsg.com/data/lsvideo/videos/${yyyy}/${mm}/${filename}.mp4`; }        if (!videoUrl) { console.log("❌ 未匹配任何规则:", src); return; }        console.log("视频 URL：", videoUrl);        const video = document.createElement("video");        video.src = videoUrl;        video.controls = true;        video.style.width = "100%";        video.style.maxWidth = "800px";        video.style.border = "2px solid #0af";        video.poster = src;        const wrapper = posterImg.closest(".video-easter-egg-poster");        wrapper.innerHTML = "";        wrapper.appendChild(video);        console.log("✅ 替换完成:", videoUrl);    });    console.log(">>> 批量解锁视频 Bookmarklet 结束 <<<");})();
+javascript:(() => {
+    document.querySelectorAll('.video-easter-egg-blocker, .video-easter-egg-overlay').forEach(el => el.remove());
+    const posterImgs = document.querySelectorAll(".video-easter-egg-poster img");
+    if (posterImgs.length === 0) return;
+    const extensions = ['mp4', 'mov', 'm4v'];
+    posterImgs.forEach(posterImg => {
+        const src = posterImg.src;
+        let videoBaseUrl = null;
+        let match = src.match(/\/data\/attachments\/posters\/(\d+)\/(\d+)-([a-f0-9]+)\.jpg$/);
+        if (match) {
+            const [_, postId, videoId, hash] = match;
+            videoBaseUrl = `https://cdn-videos.lpsg.com/data/video/${postId}/${videoId}-${hash}`;
+        }
+        match = src.match(/\/data\/+lsvideo\/thumbnails\/(\d+)\/(\d+)\/(.+)\.jpg$/);
+        if (match) {
+            const [_, yyyy, mm, filename] = match;
+            videoBaseUrl = `https://cdn-videos.lpsg.com/data/lsvideo/videos/${yyyy}/${mm}/${filename}`;
+        }
+        if (!videoBaseUrl) return;
+        const video = document.createElement("video");
+        video.controls = true;
+        video.style.width = "100%";
+        video.style.maxWidth = "800px";
+        video.style.border = "2px solid #0af";
+        video.poster = src;
+        extensions.forEach(ext => {
+            const source = document.createElement("source");
+            source.src = `${videoBaseUrl}.${ext}`;
+            video.appendChild(source);
+        });
+        const wrapper = posterImg.closest(".video-easter-egg-poster");
+        if (wrapper) {
+            wrapper.innerHTML = "";
+            wrapper.appendChild(video);
+        }
+    });
+})();
